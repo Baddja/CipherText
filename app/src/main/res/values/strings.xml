@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">CipherText</string>
+
+    <string name="title_activity_smsview">Decipher SMS Message</string>
+    <string name="title_activity_smsnew">Cipher SMS Message</string>
+
+    <string name="new_sms">New SMS</string>
+    <string name="refresh">Refresh</string>
+
+    <color name="primary">#03A9F4</color>
+    <color name="primaryDark">#0288D1</color>
+    <color name="accent">#F57C00</color>
+    <color name="textWhite">#000000</color>
+    <color name="textBlack">#FFFFFFFF</color>
+
+</resources>
