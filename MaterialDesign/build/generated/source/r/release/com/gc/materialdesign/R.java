@@ -154,12 +154,13 @@ containing a value of this type.
         public static int value=0x7f010005;
     }
     public static final class color {
-        public static int green=0x7f050000;
-        public static int primary=0x7f050001;
-        public static int primaryDark=0x7f050002;
-        public static int textAlt=0x7f050003;
-        public static int textPrimary=0x7f050004;
-        public static int thumbColor=0x7f050005;
+        public static int accent=0x7f050000;
+        public static int green=0x7f050001;
+        public static int primary=0x7f050002;
+        public static int primaryDark=0x7f050003;
+        public static int textBlack=0x7f050004;
+        public static int textWhite=0x7f050005;
+        public static int thumbColor=0x7f050006;
     }
     public static final class drawable {
         public static int background_button=0x7f020000;

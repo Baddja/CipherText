@@ -1,9 +1,14 @@
 package com.baddja.ciphertext;
 
+import android.app.Activity;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
+import android.provider.Telephony;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.telephony.SmsManager;
@@ -43,16 +48,45 @@ public class CipherActivity extends ActionBarActivity implements ContactsFragmen
     private Intent sentIntent, deliveredIntent;
     private PendingIntent sendPI, deliveredPI;
 
-    //BroadcastReceivers
-    private SMSSentReceiver sentReceiver = new SMSSentReceiver();
-    private SMSDeliveredReceiver deliveredReceiver = new SMSDeliveredReceiver();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cipher);
 
         context = this;
+
+        this.registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                switch (getResultCode()) {
+                    case Activity.RESULT_OK:
+                        String number = intent.getStringExtra(HomeActivity.SMSHEADER);
+                        String message = intent.getStringExtra(HomeActivity.SMSBODY);
+                        ContentValues values = new ContentValues();
+                        values.put(Telephony.Sms.Sent.ADDRESS, number);
+                        values.put(Telephony.Sms.Sent.BODY, message);
+                        context.getContentResolver().insert(Telephony.Sms.Sent.CONTENT_URI, values);
+                        startActivity(new Intent(context,HomeActivity.class));
+                        break;
+                    case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
+                        Toast.makeText(context, "Generic failure",
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                    case SmsManager.RESULT_ERROR_NO_SERVICE:
+                        Toast.makeText(context, "No service",
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                    case SmsManager.RESULT_ERROR_NULL_PDU:
+                        Toast.makeText(context, "Null PDU",
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                    case SmsManager.RESULT_ERROR_RADIO_OFF:
+                        Toast.makeText(context, "Radio off",
+                                Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+        }, new IntentFilter(SENT));
 
         //Avoid recreation of objects if there is a saved instance state
         if(savedInstanceState != null){
@@ -180,9 +214,9 @@ public class CipherActivity extends ActionBarActivity implements ContactsFragmen
 
                     deliveredIntent = new Intent(DELIVERED);
 
-                    sendPI = PendingIntent.getBroadcast(this, 0, new Intent(SENT), PendingIntent.FLAG_ONE_SHOT);
+                    sendPI = PendingIntent.getBroadcast(this.getApplicationContext(), 0, new Intent(SENT), PendingIntent.FLAG_UPDATE_CURRENT);
 
-                    deliveredPI = PendingIntent.getBroadcast(this, 0, new Intent(DELIVERED), PendingIntent.FLAG_ONE_SHOT);
+                    deliveredPI = PendingIntent.getBroadcast(this.getApplicationContext(), 1, new Intent(DELIVERED), PendingIntent.FLAG_UPDATE_CURRENT);
 
                     if(message.length() > 180){
                         ArrayList<String> msgArray = smsMan.divideMessage(msg);
